@@ -3,7 +3,6 @@
 
 ## 项目简介
   基于临床指南以及专家意见设计并实现糖肝共管路径，为糖尿病、脂肪肝患者及医生提供健康管理服务。
-  
 
 ## 环境配置
 SpringBoot 2.6.13
@@ -21,43 +20,108 @@ Lombok
 
 MYSQL(version 5.7.33)
 
+### 问题汇总
+
+*1.创建项目时初始化，maven下载依赖包特别慢*
+
+解决方法：
+
+配置镜像国内镜像，参考：https://blog.csdn.net/fengyuyeguirenenen/article/details/123621163
+
 
 ## 数据结构设计
 User
 
+用户信息
+
 CheckLog
+
+检查报告记录
 
 DietLog
 
+饮食记录
+
 DietPlan
+
+饮食目标、饮食计划
 
 GluLog
 
+血糖记录
+
 GluPlan
+
+血糖目标、血糖计划
 
 HealthFile
 
+健康档案
+
 HealthLog
+
+健康指标记录
 
 MedicineLog
 
+药物记录
+
 MedicinePlan
+
+药物方案
 
 SportItem
 
+运动项目
+
 SportLog
+
+运动记录
 
 SportPlan
 
+运动计划、运动目标
+
 WeightLog
+
+体重记录
 
 WeightPlan
 
+减重计划、减重目标
 
 ## 接口功能
 
-
 ## 后端上线服务器
+
+### 上线流程
+
+软件：
+
+XShell:远程连接服务器
+
+XFtp：远程传输文件
+
+服务器：
+
+阿里云服务器 
+
+操作系统 CentOs
+
+参考链接：https://developer.aliyun.com/article/1283130
+
+Jar包可在本地打包并上传至服务器。
+
+先在本地以及服务器进行测试:Java -jar xxx.jar 查看是否可以成功运行
+
+
+### 防火墙以及出入站规则
+
+部署完成后外网依旧访问不到。检查以下内容：
+
+*服务器中，端口对应的防火墙是否已经关闭？*
+
+*设定服务器的安全组：入站和出站规则*
 
 ### 问题汇总
 *1.高版本JAVA能否运行在低版本生产环境？*
@@ -142,6 +206,39 @@ jakarta.* 更改为javax.*
 ```<mainClass>zjubiomedit.mafld_backend.MafldBackendApplication</mainClass>```
 
 指明主类位置
+
+## nginx 重定向
+
+小程序要求安全域名必须是https开头，具备SSL证书且有域名。
+
+现已有SSL证书和域名，要求使用nginx代理，将https的网络请求代理至本地的相应接口。
+
+例如：当前服务运行在http://.....:8799端口。当接收到https://.....的消息时，需要将其重定向至本地的:8799端口。
+
+参考方法：https://blog.csdn.net/gao511147456/article/details/132226072
+
+例如，更改配置文件如下：
+
+```
+location /mafld{
+  rewrite ^/mafld/(.*)$ /$1 break;
+  proxy pass http://localhost:8799;
+}
+
+```
+
+重启nginx服务后生效。
+
+例如：
+
+原访问接口为：http://xxx.xxx.xxx:8799/user/getpatients
+
+则在重定向后访问接口为:https://xxx.xxx.xxx/mafld/user/getpatients
+
+
+
+
+
 
 
 
